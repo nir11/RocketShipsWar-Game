@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <style>
+
+        body {
+            overflow: hidden;
+        }
+
+        #gameDiv {
+            position: absolute;
+            top: 140px;
+            left: 140px;
+            width: 20px;
+            height: 20px;
+            background-color: black;
+        }
+
+        #userRocketShipImg {
+            width: 50px;
+            left: 30px;
+            position: absolute;
+            bottom: 10px;
+            overflow: hidden;
+            }
+    </style>
+
+    <script>
+        function set() {
+            alert('key up');
+        }
+    </script>
+
+</head>
+<body id="body" dir="rtl">
+    <div id="gameDiv">
+        <img src="src/rocketShip.png" id="userRocketShipImg"/>
+    </div>
+
+    <script>
+
+        $(document).ready(function () {
+
+            $userRocketShipImg = $("#userRocketShipImg");
+            var $position = $userRocketShipImg.position();
+            //alert($position.left)
+
+            $("html").keydown(function (event) {
+                if (event.which == "37") $userRocketShipImg.animate({ "left": "-=30px" }, { queue: false });
+
+                if (event.which == "39") $userRocketShipImg.animate({ "left": "+=30px" }, { queue: false });
+
+                if (event.which == "38") $userRocketShipImg.animate({ "top": "-=30px" }, { queue: false });
+
+                if (event.which == "40") $userRocketShipImg.animate({ "top": "+=30px" }, { queue: false });
+            });
+        
+            //var change = {
+            //    37: {                     
+            //            left: "-=1" //left                     
+            //    },
+
+            //    38: {
+            //        top: "-=1"  //up
+            //    },
+
+            //    39: {
+            //        left: "+=1" //right
+            //    },
+
+            //    40: {
+            //        top: "+=1"  //down
+            //    },
+            //}
+
+            //$(document).one("keydown", keyDown)
+
+            //function keyDown(e) {
+            //    console.log("down")
+            //    $(document).one("keyup", keyup)
+
+            
+            //    var animation = change[e.which];
+                
+
+            //    going = setInterval(keepGoing, 1);
+
+            //    function keepGoing() {
+            //        $userRocketShipImg.css(animation)
+            //    }
+            //}
+
+            //function keyup(e) {
+            //    console.log("up")
+            //    clearInterval(going)
+            //    $(document).one("keydown", keyDown)
+            //}
+
+        })
+
+    </script>
+
+</body>
+</html>
