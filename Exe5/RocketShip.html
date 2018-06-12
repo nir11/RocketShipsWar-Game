@@ -11,12 +11,22 @@
             overflow: hidden;
         }
 
+        table {
+            border-collapse: collapse;
+            margin:auto;
+            text-align:center;
+        }
+        td{
+            padding:5px;
+        }
+
         #gameDiv {
             position: relative;
             width: 90%;
             height: 300px;
             border: 2px solid red;
             margin:auto;
+            margin-bottom:10px;
         }
 
         #userRocketShipImg, #enemyShip, #motherShip {
@@ -39,6 +49,7 @@
             background-color: red;
         }
 
+
     </style>
 
     <script>
@@ -51,25 +62,48 @@
 <body id="body" dir="rtl">
     <div id="gameDiv">
         <img src="src/rocketShip.png" id="userRocketShipImg"/>
-        <div id="fire"></div>
-        <div  id="hit">0</div>
-
     </div>
+    <table border="1">
+        <tr style="font-weight:bold">
+            <td></td>
+            <td>חללית אויב</td>
+            <td>חללית אויב מפקד</td>
+            <td>חללית אויב ספינת אם</td>
+            <td>סה"כ</td>
 
+        </tr>
+        <tr>
+            <td>פגיעות</td>
+            <td id="enemyShipHits"></td>
+            <td id="commandEnemyShipHits"></td>
+            <td id="motherShipHits"></td>
+            <td id="totalHits"></td>
+        </tr>
+        <tr>
+            <td>נקודות</td>
+            <td id="enemyShipPoints">0</td>
+            <td id="commandEnemyShipPoints">0</td>
+            <td id="motherShipPoints">0/td>
+            <td id="totalPoints">0</td>
+        </tr>
+    </table>
     <script>
 
         $(document).ready(function () {
 
-            var $hit = $('#hit');
             var $userRocketShipImg = $("#userRocketShipImg");
             var $enemyShip = $('<img id = enemyShip>');
 
+            var enemyShipHits = 0, commandEnemyShipHits = 0, motherShipHits = 0, totalHits = 0;
+            var enemyShipHitsAttempts = 0, commandEnemyShipHitsAttempts = 0, motherShipHitsAttempts = 0, totalAttempts = 0;;
+            var enemyShipPoints = 0, commandEnemyShipPoints = 0, motherShipPoints = 0, totalPoints = 0;
+            var currentEnemyShipIndex = 0;   //1-$enemyShipHits  2-$commandEnemyShipHits 3-$motherShipHits
+
+
+
             var userRocketShipPosition = $userRocketShipImg.offset();   // מיקום של חללית המשתמש
             var hit = true;                                             // פגיעה בחללית אויב, מאותחל בטרו בשביל האיטרציה הראשונה
-            var $fire = $('#fire').css({                                // יצירת ירייה ומיקומה בקצה של החללית  
-                top: '230px', left: userRocketShipPosition.left, position: 'absolute'
-            });
-            $fire.hide();
+            
 
             var $gameDiv = $('#gameDiv'),   
                 w = $gameDiv.width() - $userRocketShipImg.width(),      //כל המשתנים עד קיז קשורים למיקום של החללית בלחיצה על ימינה או שמאלה
@@ -77,11 +111,11 @@
                 x = 3;
             var keys = {}
 
-
+            updateHitsTable(false);
             setInterval(function () {       
 
                 if (hit) {      
-                    $enemyShip.stop(); 
+                    $enemyShip.stop();
                     createEnemyShip();
                     hit = false;
                 }
@@ -102,32 +136,33 @@
 
             $(window).keyup(function (e) {      // קשור למיקום החללית
                 d[e.which] = false;
-                delete keys[e.keyCode];               
+                delete keys[e.keyCode];      
+                if (e.keyCode == 38) 
+                    createFire()           // create user fire
+
             });
 
             setInterval(function () {           // שליטה על המקשים     
               
                 for (var direction in keys) {
                     if (!keys.hasOwnProperty(direction)) continue;
-                 
-                    if (direction == 38) {      // up button
-                         createFire()           // create user fire
-                    }
-                    else {                      // left or right button
-                        $userRocketShipImg.css({ 'left': function (i, v) { return newv(v, 37, 39); } })                      
-                    }
+                    $userRocketShipImg.css({ 'left': function (i, v) { return newv(v, 37, 39); } })                      
                 }               
 
             }, 15);
 
             function createFire() {             // פונ' שיוצרת את הירי מהחללית משתמש
 
+                var hitIteration = 0, missIteration = 0;
                 userRocketShipPosition = $userRocketShipImg.offset();
-                var firePosition = $fire.offset();
-                $fire.css({
+
+                var $fire = $("<div id = fire>").css({                                // יצירת ירייה ומיקומה בקצה של החללית  
                     top: '230px', left: userRocketShipPosition.left-30, position: 'absolute'
                 });
-                $fire.show();
+                $("#gameDiv").append($fire);
+
+                var firePosition = $fire.offset();
+
                 $fire.animate({                 // תנועה של הירי מלמטה למעלה
                     top: "1%",
                     duration : 2000
@@ -137,25 +172,36 @@
                         step: function () {     // בכל שלב באנימציה מתבצע הקוד הזה
                     
                             if (collision($fire, $enemyShip)) {     // בדיקה אם הירי פגע בחללית אויב
-                                $hit.text(parseInt($hit.text())+1); //= parseInt($hit.innerHTML)+1;
-                                $enemyShip.hide();
-                                $fire.css({ left: $userRocketShipImg.left, top: $userRocketShipImg.top });
-                                /*$fire.css({
-                                    top: '230px', left: userRocketShipPosition.left - 30, position: 'absolute'
-                                });*/
-                                hit = true;
-                            }                        
-                        }
-                    },
-                    {
-                        complete: function () { // בסוף האנימציה אמור להתבצע הקוד הזה. לא מתבצע משום מה
-                            $fire.hide();
-                            $fire.css({
-                            top: '230px', left: userRocketShipPosition.left-30, position: 'absolute'
-                            });
+                                if (hitIteration == 0) {   
+                                    hit = true;
+                                    updateHitsTable(true);
+                                    $enemyShip.hide();
+                                    hitIteration++;
+                                    missIteration++;
+                                }
+                               
+                                $fire.remove();
+                                $fire.stop();
+                            }
+                            else {
+                                if (missIteration == 0) {
+                                    hit = false;
+                                    updateHitsTable(false);
+                                    missIteration++;
+                                }
+
+                            }
+
                         }
                     })
+                $fire.promise().done(function () {
+                    $fire.hide();
+                });
 
+            }
+
+            function removeEnemy(iteration) {
+               
             }
 
             function createEnemyShip() {
@@ -166,21 +212,19 @@
 
                 switch (randShip) {
                     case 1:
-                        $enemyShip.attr({ "src": "src/enemyRocketShip1.png", "id": "enemyShip" }).css({     // חללית אויב
-                            top: '1%', left: Math.random() * $gameDiv.width(), position: 'absolute'
-                        })
+                        $enemyShip.attr({ "src": "src/enemyRocketShip1.png", "id": "enemyShip" });          // חללית אויב
+                        currentEnemyShipIndex = 1;
                         break;
                     case 2:
-                        $enemyShip.attr({ "src": "src/enemyRocketShip2.png", "id": "enemyShip" }).css({     // חללית אויב - מפקד
-                            top: '1%', left: Math.random() * $gameDiv.width() + 22, position: 'absolute'
-                        })
+                        $enemyShip.attr({ "src": "src/enemyRocketShip2.png", "id": "enemyShip" });          // חללית אויב - מפקד
+                        currentEnemyShipIndex = 2;
                         break;
                     case 3:
-                        $enemyShip.attr({ "src": "src/enemyRocketShip3.png", "id": "motherShip" }).css({     // חללית אויב - ספינת אם
-                            top: '1%', left: Math.random() * $gameDiv.width(), position: 'absolute'
-                        })
+                        $enemyShip.attr({ "src": "src/enemyRocketShip3.png", "id": "motherShip" });         // חללית אויב - ספינת אם
+                        currentEnemyShipIndex = 3;
                         break;
-                }               
+                }         
+                $enemyShip.css({ top: '1%', left: Math.random() * $gameDiv.width(), position: 'absolute' })
                 $("#body").append($enemyShip);
 
                 $enemyShip.animate({ top: "270px" }, 5000, function () {        // תנועה של החללית מלמעלה למטה              
@@ -203,6 +247,54 @@
 
                 if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
                     return true;
+            }
+
+            function updateHitsTable(hitA) {
+                switch (currentEnemyShipIndex) {
+                    case 1:
+                        if (hitA) {
+                            enemyShipHits++;
+                            enemyShipPoints = enemyShipPoints + 10;
+                            enemyShipHitsAttempts--;
+                        }
+                        enemyShipHitsAttempts++;
+                        break;
+
+                    case 2:
+                        if (hitA) {
+                            commandEnemyShipHits++;
+                            commandEnemyShipPoints = commandEnemyShipPoints + 25;
+                            commandEnemyShipHitsAttempts--;
+                        }
+                        commandEnemyShipHitsAttempts++;
+                        break;
+
+                    case 3:
+                        if (hitA) {
+                            motherShipHits++;
+                            motherShipPoints = motherShipPoints + 50;
+                            motherShipHitsAttempts--;
+                        }
+                        motherShipHitsAttempts++;
+                        break;
+                }
+                totalHits = enemyShipHits + commandEnemyShipHits + motherShipHits;
+                totalAttempts = enemyShipHitsAttempts + commandEnemyShipHitsAttempts + motherShipHitsAttempts;
+                totalPoints = enemyShipPoints + commandEnemyShipPoints + motherShipPoints;
+
+                // First row
+                $("#enemyShipHits").html(enemyShipHitsAttempts + " / " + enemyShipHits);
+                $("#commandEnemyShipHits").html(commandEnemyShipHitsAttempts + " / " + commandEnemyShipHits);
+                $("#motherShipHits").html(motherShipHitsAttempts + " / " + motherShipHits);
+                $('#totalHits').html(totalAttempts + " / " + totalHits);
+
+                // Second row
+                $("#enemyShipPoints").html(enemyShipPoints);
+                $("#commandEnemyShipPoints").html(commandEnemyShipPoints);
+                $("#motherShipPoints").html(motherShipPoints);
+                $("#totalPoints").html(totalPoints);
+
+
             }
 
         })
