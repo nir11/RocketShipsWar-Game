@@ -33,6 +33,11 @@
             height: 5px;
             background-color: blueviolet;
         }
+        #hit {
+            width: 125px;
+            height: 25px;
+            background-color: red;
+        }
 
     </style>
 
@@ -47,13 +52,15 @@
     <div id="gameDiv">
         <img src="src/rocketShip.png" id="userRocketShipImg"/>
         <div id="fire"></div>
+        <div  id="hit">0</div>
 
     </div>
 
     <script>
 
         $(document).ready(function () {
-                      
+
+            var $hit = $('#hit');
             var $userRocketShipImg = $("#userRocketShipImg");
             var $enemyShip = $('<img id = enemyShip>');
 
@@ -130,11 +137,12 @@
                         step: function () {     // בכל שלב באנימציה מתבצע הקוד הזה
                     
                             if (collision($fire, $enemyShip)) {     // בדיקה אם הירי פגע בחללית אויב
+                                $hit.text(parseInt($hit.text())+1); //= parseInt($hit.innerHTML)+1;
                                 $enemyShip.hide();
-                                $fire.hide();
-                                $fire.css({
+                                $fire.css({ left: $userRocketShipImg.left, top: $userRocketShipImg.top });
+                                /*$fire.css({
                                     top: '230px', left: userRocketShipPosition.left - 30, position: 'absolute'
-                                });
+                                });*/
                                 hit = true;
                             }                        
                         }
@@ -194,7 +202,7 @@
                 var r2 = x2 + w2;
 
                 if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
-                return true;
+                    return true;
             }
 
         })
