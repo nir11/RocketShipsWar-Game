@@ -200,10 +200,6 @@
 
             }
 
-            function removeEnemy(iteration) {
-               
-            }
-
             function createEnemyShip() {
 
                 $enemyShip.show();             
@@ -224,7 +220,7 @@
                         currentEnemyShipIndex = 3;
                         break;
                 }         
-                $enemyShip.css({ top: '1%', left: Math.random() * $gameDiv.width(), position: 'absolute' })
+                $enemyShip.css({ top: '1%', left: Math.random() * ($gameDiv.width()), position: 'absolute' })
                 $("#body").append($enemyShip);
 
                 $enemyShip.animate({ top: "270px" }, 5000, function () {        // תנועה של החללית מלמעלה למטה              
