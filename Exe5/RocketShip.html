@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <title></title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="jquery.animate-colors-min.js"></script>
 
     <style>
 
@@ -13,20 +14,21 @@
 
         table {
             border-collapse: collapse;
-            margin:auto;
-            text-align:center;
+            margin: auto;
+            text-align: center;
         }
-        td{
-            padding:5px;
+
+        td {
+            padding: 5px;
         }
 
         #gameDiv {
             position: relative;
             width: 90%;
-            height: 300px;
+            height: 450px;
             border: 2px solid red;
-            margin:auto;
-            margin-bottom:10px;
+            margin: auto;
+            margin-bottom: 10px;
         }
 
         #userRocketShipImg, #enemyShip, #motherShip {
@@ -36,27 +38,28 @@
             bottom: 10px;
             overflow: hidden;
         }
-     
+
 
         #fire {
             width: 5px;
             height: 5px;
             background-color: blueviolet;
         }
+
         #hit {
             width: 125px;
             height: 25px;
             background-color: red;
         }
 
-
+        #gameOver {
+            top: 30%;
+            left: 40%;
+            position: absolute;
+            font-size: large;
+        }
     </style>
 
-    <script>
-        function set() {
-            alert('key up');
-        }
-    </script>
 
 </head>
 <body id="body" dir="rtl">
@@ -87,6 +90,7 @@
             <td id="totalPoints">0</td>
         </tr>
     </table>
+    <div id="gameOver">Game Over</div>
     <script>
 
         $(document).ready(function () {
@@ -103,18 +107,20 @@
 
             var userRocketShipPosition = $userRocketShipImg.offset();   // מיקום של חללית המשתמש
             var hit = true;                                             // פגיעה בחללית אויב, מאותחל בטרו בשביל האיטרציה הראשונה
-            
 
-            var $gameDiv = $('#gameDiv'),   
+
+            var $gameOver = $('#gameOver'); //game over Div
+            $gameOver.hide();
+            var $gameDiv = $('#gameDiv'),
                 w = $gameDiv.width() - $userRocketShipImg.width(),      //כל המשתנים עד קיז קשורים למיקום של החללית בלחיצה על ימינה או שמאלה
                 d = {},
                 x = 3;
             var keys = {}
 
             updateHitsTable(false);
-            setInterval(function () {       
+            setInterval(function () {
 
-                if (hit) {      
+                if (hit) {
                     $enemyShip.stop();
                     createEnemyShip();
                     hit = false;
@@ -124,9 +130,9 @@
 
 
             function newv(v, a, b) {        // קשור למיקום החללית
- 
+
                 var n = parseInt(v, 10) - (d[a] ? x : 0) + (d[b] ? x : 0);
-                return n < 0 ? 0 : n > w ? w : n;   
+                return n < 0 ? 0 : n > w ? w : n;
             }
 
             $(document).keydown(function (e) {      // קשור למיקום חללית
@@ -136,28 +142,36 @@
 
             $(window).keyup(function (e) {      // קשור למיקום החללית
                 d[e.which] = false;
-                delete keys[e.keyCode];      
-                if (e.keyCode == 38) 
+                delete keys[e.keyCode];
+                if (e.keyCode == 38)
                     createFire()           // create user fire
 
             });
 
             setInterval(function () {           // שליטה על המקשים     
-              
-                for (var direction in keys) {
-                    if (!keys.hasOwnProperty(direction)) continue;
-                    $userRocketShipImg.css({ 'left': function (i, v) { return newv(v, 37, 39); } })                      
-                }               
 
-            }, 15);
+                if ($enemyShip.offset().top + $enemyShip.height() > $gameDiv.position().top + $gameDiv.height()) {
+                    $gameOver.show();
+                    $gameOver.animate({ fontSize: '3em', color: 'red',  opacity: '1' }, "slow");
+                    $gameOver.animate({ top: '+=100px', color: 'yellow', opacity: '0.6' }, "slow");
+                    $gameOver.animate({ left: '+=100px', color: 'green', opacity: '1' }, "slow");
+                    $gameOver.animate({ top: '-=100px', color: 'pink', opacity: '0.6' }, "slow");
+                    $gameOver.animate({ left: '-=100px', color: 'orange', opacity: '1' }, "slow");
+                    return;
+                }
+                    for (var direction in keys) {
+                        if (!keys.hasOwnProperty(direction)) continue;
+                        $userRocketShipImg.css({ 'left': function (i, v) { return newv(v, 37, 39); } })
+                    }
 
+                }, 15);
             function createFire() {             // פונ' שיוצרת את הירי מהחללית משתמש
 
                 var hitIteration = 0, missIteration = 0;
                 userRocketShipPosition = $userRocketShipImg.offset();
 
                 var $fire = $("<div id = fire>").css({                                // יצירת ירייה ומיקומה בקצה של החללית  
-                    top: '230px', left: userRocketShipPosition.left-30, position: 'absolute'
+                    top: $gameDiv.height(), left: userRocketShipPosition.left-30, position: 'absolute'
                 });
                 $("#gameDiv").append($fire);
 
@@ -170,7 +184,7 @@
                 },
                     {
                         step: function () {     // בכל שלב באנימציה מתבצע הקוד הזה
-                    
+
                             if (collision($fire, $enemyShip)) {     // בדיקה אם הירי פגע בחללית אויב
                                 if (hitIteration == 0) {   
                                     hit = true;
@@ -183,12 +197,10 @@
                                 $fire.remove();
                                 $fire.stop();
                             }
-                            else {
-                                if (missIteration == 0) {
+                            else if (missIteration == 0) {
                                     hit = false;
                                     updateHitsTable(false);
                                     missIteration++;
-                                }
 
                             }
 
@@ -206,25 +218,27 @@
                 var myArray = [1, 1, 1, 1, 1, 1, 1, 2, 2, 3];
                 var randShip = myArray[Math.floor(Math.random() * myArray.length)];                         // ההסתברות שביקשו
 
+                $enemyShip.css({ top: '0px', left: Math.random() * ($gameDiv.width()), position: 'absolute' })
                 switch (randShip) {
                     case 1:
                         $enemyShip.attr({ "src": "src/enemyRocketShip1.png", "id": "enemyShip" });          // חללית אויב
                         currentEnemyShipIndex = 1;
+                        $enemyShip.animate({ top: $gameDiv.height() }, 5000); 
                         break;
                     case 2:
                         $enemyShip.attr({ "src": "src/enemyRocketShip2.png", "id": "enemyShip" });          // חללית אויב - מפקד
                         currentEnemyShipIndex = 2;
+                        $enemyShip.animate({ top: $gameDiv.height(), left: Math.random() * $gameDiv.width() + 22 }, 5000); 
                         break;
                     case 3:
                         $enemyShip.attr({ "src": "src/enemyRocketShip3.png", "id": "motherShip" });         // חללית אויב - ספינת אם
                         currentEnemyShipIndex = 3;
+                        $enemyShip.animate({ top: $gameDiv.height(), left: Math.random() * $gameDiv.width() + 22 }, 5000); 
                         break;
                 }         
-                $enemyShip.css({ top: '1%', left: Math.random() * ($gameDiv.width()), position: 'absolute' })
                 $("#body").append($enemyShip);
 
-                $enemyShip.animate({ top: "270px" }, 5000, function () {        // תנועה של החללית מלמעלה למטה              
-                });           
+                          
             }
 
             function collision($div1, $div2) {          // פונ' לבדיקה האם הירי פגע בחללית האויב
