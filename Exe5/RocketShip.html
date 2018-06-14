@@ -25,7 +25,7 @@
         #gameDiv {
             position: relative;
             width: 90%;
-            height: 450px;
+            height: 300px;
             border: 2px solid red;
             margin: auto;
             margin-bottom: 10px;
@@ -171,7 +171,7 @@
                 userRocketShipPosition = $userRocketShipImg.offset();
 
                 var $fire = $("<div id = fire>").css({                                // יצירת ירייה ומיקומה בקצה של החללית  
-                    top: $gameDiv.height(), left: userRocketShipPosition.left-30, position: 'absolute'
+                    top: $userRocketShipImg.offset().top, left: $userRocketShipImg.offset().left - 30, position: 'absolute'
                 });
                 $("#gameDiv").append($fire);
 
