@@ -6,6 +6,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="jquery.animate-colors-min.js"></script>
 
+    <script src="//code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script src="src/jquery.imgexplode.min.js"></script>
+    <script src="jquery.imgexplode.js"></script>
+
     <style>
 
         body {
@@ -115,7 +119,7 @@
             var $gameDiv = $('#gameDiv'),
                 w = $gameDiv.width() - $userRocketShipImg.width(),      //כל המשתנים עד קיז קשורים למיקום של החללית בלחיצה על ימינה או שמאלה
                 d = {},
-                x = 3;
+                x = 5;
             var keys = {}
 
             updateHitsTable(false);
@@ -172,7 +176,7 @@
                 userRocketShipPosition = $userRocketShipImg.offset();
 
                 var $fire = $("<div id = fire>").css({                                // יצירת ירייה ומיקומה בקצה של החללית  
-                    top: $userRocketShipImg.offset().top, left: $userRocketShipImg.offset().left - 30, position: 'absolute'
+                    top: $userRocketShipImg.offset().top, left: $userRocketShipImg.offset().left - 48, position: 'absolute'
                 });
                 $("#gameDiv").append($fire);
 
@@ -187,10 +191,11 @@
                         step: function () {     // בכל שלב באנימציה מתבצע הקוד הזה
 
                             if (collision($fire, $enemyShip)) {     // בדיקה אם הירי פגע בחללית אויב
-                                if (hitIteration == 0) {   
+                                if (hitIteration == 0) {
+                                   
+                                    $enemyShip.hide();
                                     hit = true;
                                     updateHitsTable(true);
-                                    $enemyShip.hide();
                                     hitIteration++;
                                     missIteration++;
                                 }
@@ -219,7 +224,7 @@
                 var myArray = [1, 1, 1, 1, 1, 1, 1, 2, 2, 3];
                 var randShip = myArray[Math.floor(Math.random() * myArray.length)];                         // ההסתברות שביקשו
 
-                $enemyShip.css({ top: '0px', left: Math.random() * ($gameDiv.width()), position: 'absolute' })
+                $enemyShip.css({ top: '0px', left: (Math.random()) * ($gameDiv.width()) +30, position: 'absolute' })
                 switch (randShip) {
                     case 1:
                         $enemyShip.attr({ "src": "src/enemyRocketShip1.png", "id": "enemyShip" });          // חללית אויב
