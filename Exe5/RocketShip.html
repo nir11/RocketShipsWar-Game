@@ -62,14 +62,58 @@
             left: 40%;
             position: absolute;
             font-size: large;
+            color: yellow;
         }
+        .myButton {
+            -moz-box-shadow: inset 0px 1px 0px 0px #97c4fe;
+            -webkit-box-shadow: inset 0px 1px 0px 0px #97c4fe;
+            box-shadow: inset 0px 1px 0px 0px #97c4fe;
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #3d94f6), color-stop(1, #1e62d0));
+            background: -moz-linear-gradient(top, #3d94f6 5%, #1e62d0 100%);
+            background: -webkit-linear-gradient(top, #3d94f6 5%, #1e62d0 100%);
+            background: -o-linear-gradient(top, #3d94f6 5%, #1e62d0 100%);
+            background: -ms-linear-gradient(top, #3d94f6 5%, #1e62d0 100%);
+            background: linear-gradient(to bottom, #3d94f6 5%, #1e62d0 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3d94f6', endColorstr='#1e62d0',GradientType=0);
+            background-color: #3d94f6;
+            -moz-border-radius: 6px;
+            -webkit-border-radius: 6px;
+            border-radius: 6px;
+            border: 1px solid #337fed;
+            display: inline-block;
+            cursor: pointer;
+            color: #ffffff;
+            font-family: Arial;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 6px 24px;
+            text-decoration: none;
+            text-shadow: 0px 1px 0px #1570cd;
+        }
+
+            .myButton:hover {
+                background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #1e62d0), color-stop(1, #3d94f6));
+                background: -moz-linear-gradient(top, #1e62d0 5%, #3d94f6 100%);
+                background: -webkit-linear-gradient(top, #1e62d0 5%, #3d94f6 100%);
+                background: -o-linear-gradient(top, #1e62d0 5%, #3d94f6 100%);
+                background: -ms-linear-gradient(top, #1e62d0 5%, #3d94f6 100%);
+                background: linear-gradient(to bottom, #1e62d0 5%, #3d94f6 100%);
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1e62d0', endColorstr='#3d94f6',GradientType=0);
+                background-color: #1e62d0;
+            }
+
+            .myButton:active {
+                position: relative;
+                top: 1px;
+            }
+
     </style>
 
 
 </head>
 <body id="body" dir="rtl">
     <div id="gameDiv">
-        <img src="src/rocketShip.png" id="userRocketShipImg"/>
+        <img src="src/rocketShip.png" id="userRocketShipImg" />
     </div>
     <table border="1">
         <tr style="font-weight:bold">
@@ -96,6 +140,7 @@
         </tr>
     </table>
     <div id="gameOver">Game Over</div>
+    <input type="button" class="myButton" value="Start Over" onclick="startOver()" style="margin-right:600px; margin-top:20px"/>
     <script>
 
         $(document).ready(function () {
@@ -153,29 +198,29 @@
 
             });
 
-            setInterval(function () {           // שליטה על המקשים     
+            setInterval(function () {           // שליטה על המקשים
 
                 if ($enemyShip.offset().top + $enemyShip.height() > $gameDiv.position().top + $gameDiv.height()) {
                     $gameOver.show();
-                    $gameOver.animate({ fontSize: '3em', color: 'red',  opacity: '1' }, "slow");
+                    $gameOver.animate({ fontSize: '3em', color: 'red', opacity: '1' }, "slow");
                     $gameOver.animate({ top: '+=100px', color: 'yellow', opacity: '0.6' }, "slow");
                     $gameOver.animate({ left: '+=100px', color: 'green', opacity: '1' }, "slow");
                     $gameOver.animate({ top: '-=100px', color: 'pink', opacity: '0.6' }, "slow");
                     $gameOver.animate({ left: '-=100px', color: 'orange', opacity: '1' }, "slow");
                     return;
                 }
-                    for (var direction in keys) {
-                        if (!keys.hasOwnProperty(direction)) continue;
-                        $userRocketShipImg.css({ 'left': function (i, v) { return newv(v, 37, 39); } })
-                    }
+                for (var direction in keys) {
+                    if (!keys.hasOwnProperty(direction)) continue;
+                    $userRocketShipImg.css({ 'left': function (i, v) { return newv(v, 37, 39); } })
+                }
 
-                }, 15);
+            }, 15);
             function createFire() {             // פונ' שיוצרת את הירי מהחללית משתמש
 
                 var hitIteration = 0, missIteration = 0;
                 userRocketShipPosition = $userRocketShipImg.offset();
 
-                var $fire = $("<div id = fire>").css({                                // יצירת ירייה ומיקומה בקצה של החללית  
+                var $fire = $("<div id = fire>").css({                                // יצירת ירייה ומיקומה בקצה של החללית
                     top: $userRocketShipImg.offset().top, left: $userRocketShipImg.offset().left - 48, position: 'absolute'
                 });
                 $("#gameDiv").append($fire);
@@ -184,7 +229,7 @@
 
                 $fire.animate({                 // תנועה של הירי מלמטה למעלה
                     top: "1%",
-                    duration : 2000
+                    duration: 2000
 
                 },
                     {
@@ -192,21 +237,21 @@
 
                             if (collision($fire, $enemyShip)) {     // בדיקה אם הירי פגע בחללית אויב
                                 if (hitIteration == 0) {
-                                   
+
                                     $enemyShip.hide();
                                     hit = true;
                                     updateHitsTable(true);
                                     hitIteration++;
                                     missIteration++;
                                 }
-                               
+
                                 $fire.remove();
                                 $fire.stop();
                             }
                             else if (missIteration == 0) {
-                                    hit = false;
-                                    updateHitsTable(false);
-                                    missIteration++;
+                                hit = false;
+                                updateHitsTable(false);
+                                missIteration++;
 
                             }
 
@@ -220,31 +265,31 @@
 
             function createEnemyShip() {
 
-                $enemyShip.show();             
+                $enemyShip.show();
                 var myArray = [1, 1, 1, 1, 1, 1, 1, 2, 2, 3];
                 var randShip = myArray[Math.floor(Math.random() * myArray.length)];                         // ההסתברות שביקשו
 
-                $enemyShip.css({ top: '0px', left: (Math.random()) * ($gameDiv.width()) +30, position: 'absolute' })
+                $enemyShip.css({ top: '0px', left: (Math.random()) * ($gameDiv.width()) + 30, position: 'absolute' })
                 switch (randShip) {
                     case 1:
                         $enemyShip.attr({ "src": "src/enemyRocketShip1.png", "id": "enemyShip" });          // חללית אויב
                         currentEnemyShipIndex = 1;
-                        $enemyShip.animate({ top: $gameDiv.height() }, 5000); 
+                        $enemyShip.animate({ top: $gameDiv.height() }, 5000);
                         break;
                     case 2:
                         $enemyShip.attr({ "src": "src/enemyRocketShip2.png", "id": "enemyShip" });          // חללית אויב - מפקד
                         currentEnemyShipIndex = 2;
-                        $enemyShip.animate({ top: $gameDiv.height(), left: Math.random() * $gameDiv.width() + 22 }, 5000); 
+                        $enemyShip.animate({ top: $gameDiv.height(), left: Math.random() * $gameDiv.width() + 22 }, 5000);
                         break;
                     case 3:
                         $enemyShip.attr({ "src": "src/enemyRocketShip3.png", "id": "motherShip" });         // חללית אויב - ספינת אם
                         currentEnemyShipIndex = 3;
-                        $enemyShip.animate({ top: $gameDiv.height(), left: Math.random() * $gameDiv.width() + 22 }, 5000); 
+                        $enemyShip.animate({ top: $gameDiv.height(), left: Math.random() * $gameDiv.width() + 22 }, 5000);
                         break;
-                }         
+                }
                 $("#body").append($enemyShip);
 
-                          
+
             }
 
             function collision($div1, $div2) {          // פונ' לבדיקה האם הירי פגע בחללית האויב
@@ -262,7 +307,7 @@
                 var r2 = x2 + w2;
 
                 if (b1 < y2 || y1 > b2 || r1 < x2 || x1 > r2) return false;
-                    return true;
+                return true;
             }
 
             function updateHitsTable(hitA) {
@@ -314,6 +359,10 @@
             }
 
         })
+
+        function startOver() {
+            window.location.reload();
+        }
 
     </script>
 
