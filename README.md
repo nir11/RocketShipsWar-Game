@@ -1,6 +1,6 @@
 # RocketShipsWar Game
 
-Defend yourself from a rocket ships army
+Defend yourself from rocket ships army
 <br/>                           
                       
 <div>
